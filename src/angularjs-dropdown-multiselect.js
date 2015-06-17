@@ -2,8 +2,8 @@
 
 var directiveModule = angular.module('angularjs-dropdown-multiselect', []);
 
-directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$compile', '$parse',
-    function ($filter, $document, $compile, $parse) {
+directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$compile', '$parse', '$timeout',
+    function ($filter, $document, $compile, $parse, $timeout) {
 
         return {
             restrict: 'AE',
@@ -56,9 +56,28 @@ directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$co
             },
             link: function ($scope, $element, $attrs) {
                 var $dropdownTrigger = $element.children()[0];
-                
+
+                var findPosition = function ( oElement ) {
+                    if( typeof( oElement.offsetParent ) != 'undefined' ) {
+                        for( var posY = 0; oElement; oElement = oElement.offsetParent ) {
+                            posY += oElement.offsetTop;
+                        }
+                        return posY;
+                    } else {
+                        return oElement.y;
+                    }
+                };
+
                 $scope.toggleDropdown = function () {
                     $scope.open = !$scope.open;
+                    $timeout(function(){
+                        var htmlStyle = $document[0].lastChild.style;
+                        if($scope.open){
+                            htmlStyle.minHeight = findPosition($dropdownTrigger.lastChild) + $dropdownTrigger.lastChild.offsetHeight + 'px';
+                        } else {
+                            htmlStyle.removeProperty('min-height')
+                        }
+                    });
                 };
 
                 $scope.checkboxClick = function ($event, id) {
@@ -291,4 +310,4 @@ directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$co
                 $scope.externalEvents.onInitDone();
             }
         };
-}]);
+    }]);
