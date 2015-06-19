@@ -72,8 +72,10 @@ directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$co
                     $scope.open = !$scope.open;
                     $timeout(function(){
                         var htmlStyle = $document[0].lastChild.style;
-                        if($scope.open){
-                            htmlStyle.minHeight = findPosition($dropdownTrigger.lastChild) + $dropdownTrigger.lastChild.offsetHeight + 'px';
+                        var posA = findPosition($dropdownTrigger.lastChild) + $dropdownTrigger.lastChild.offsetHeight;
+                        var posB = $document[0].lastChild.offsetHeight;
+                        if($scope.open && posA > posB){
+                            htmlStyle.minHeight = posA + 'px';
                         } else {
                             htmlStyle.removeProperty('min-height')
                         }
